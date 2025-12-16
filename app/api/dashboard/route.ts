@@ -56,9 +56,6 @@ export async function GET() {
     const todaysSales = salesAggregation[0]?.todaysSales ?? 0;
     const totalProfit = salesAggregation[0]?.totalProfit ?? 0;
 
-    console.log("Dashboard API - Calculated Todays Sales:", todaysSales);
-    console.log("Dashboard API - Calculated Total Profit:", totalProfit);
-
     // 7️⃣ Response
     return NextResponse.json(
       {
@@ -68,7 +65,15 @@ export async function GET() {
         todaysSales,
         totalProfit,
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'Surrogate-Control': 'no-store'
+        }
+      }
     );
 
   } catch (error) {

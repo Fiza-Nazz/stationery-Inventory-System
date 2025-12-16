@@ -43,7 +43,15 @@ export async function GET() {
     }));
 
     // 5️⃣ Return JSON response
-    return NextResponse.json(formattedSales, { status: 200 });
+    return NextResponse.json(formattedSales, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+      }
+    });
   } catch (error) {
     console.error("Reports API Error:", error);
     return NextResponse.json(
