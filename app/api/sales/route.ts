@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import Sale from "@/models/Sales";
 import Product from "@/models/Product";
 import connectDB from "@/lib/db";
-
-// Connect to MongoDB
-connectDB();
+import mongoose from "mongoose";
 
 export async function POST(req: Request) {
   try {
+    await connectDB(); // Moved inside the function
     const data = await req.json();
     const { items, paymentMethod } = data;
 
@@ -51,8 +50,15 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ message: "Sale created successfully", sale: newSale });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
+    if (err instanceof mongoose.Error.ValidationError) {
+      const errors = Object.values(err.errors).map((error: any) => error.message);
+      return NextResponse.json(
+        { message: "Validation Error", errors },
+        { status: 400 }
+      );
+    }
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

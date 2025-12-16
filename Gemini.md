@@ -1,50 +1,16 @@
-Hi,
+Hi Gemini, I need your help as a Next.js full-stack expert. I have a Next.js 14 project and want you to **analyze every file** in the project to detect potential production build errors.
 
-I’m facing a persistent issue with my Next.js + Mongoose project. My API routes (/api/products and /api/dashboard) are failing with the following error:
+Specifically, please do the following:
 
-MongoParseError: options usenewurlparser, useunifiedtopology are not supported
+1. **Check all page.tsx and route.ts files**: Ensure no page.tsx file is being imported directly anywhere. Next.js 14 does not allow importing page.tsx files.
+2. **Check all imports**: Identify any incorrect or invalid imports that might break production build (like importing page.tsx, wrong paths, or missing modules).
+3. **Check environment variables usage**: Ensure all sensitive variables like MONGODB_URI are correctly referenced using `process.env` and are not hardcoded.
+4. **Check MongoDB connection code**: Ensure the connection string format is correct (`mongodb://` or `mongodb+srv://`) and matches the environment variables.
+5. **Check all API routes**: Identify any potential runtime errors, aggregation errors, or schema mismatches.
+6. **Check for TypeScript errors**: Highlight any TS errors that will cause the build to fail in production.
+7. **Check lib/ and models/**: Ensure all utility and model files are properly exported and can be imported safely.
+8. **Provide actionable recommendations**: For every detected issue, suggest how to fix it step by step.
 
+After analysis, give a **summary of all issues** that would prevent production deployment and exact fixes for each.
 
-Details:
-
-Mongoose version: 9.0.1
-
-Node.js version: 18+
-
-The error occurs when calling mongoose.connect(MONGODB_URI) in lib/db.ts.
-
-It breaks all database operations, returning 500 Internal Server Error on API calls.
-
-This seems to be caused by legacy options (useNewUrlParser, useUnifiedTopology) being either explicitly or implicitly used.
-
-Current lib/db.ts:
-
-import mongoose from "mongoose";
-
-const MONGO_URI = process.env.MONGODB_URI;
-
-let cached = (global as any).mongoose || { conn: null, promise: null };
-if (!(global as any).mongoose) (global as any).mongoose = cached;
-
-async function connectDB(): Promise<typeof mongoose> {
-  if (cached.conn) return cached.conn;
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGO_URI).then((mongoose) => mongoose);
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
-
-export default connectDB;
-
-
-Request:
-Please help me update the database connection code and API routes so that:
-
-The MongoDB connection works without MongoParseError.
-
-The /api/products route successfully returns all products in JSON.
-
-The /api/dashboard route works correctly.
-
-Thank you!
+Please analyze the **entire project directory**, including app/, lib/, models/, and any other custom folders.

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Product from "@/models/Product";
+import mongoose from "mongoose";
 
 /* -------------------------
    GET: All Products Fetch
@@ -27,18 +28,13 @@ export async function POST(req: Request) {
     await connectDB(); // Database se connect karo
     const body = await req.json();
 
-    // Validation (required fields)
-    if (!body.name || !body.category || !body.costPrice || !body.retailPrice || !body.stock) {
-      return NextResponse.json({ message: "All fields are required" }, { status: 400 });
-    }
-
     // Optional: check for duplicate product
     const existing = await Product.findOne({ name: body.name.trim() });
     if (existing) {
       return NextResponse.json({ message: "Product already exists" }, { status: 400 });
     }
 
-    // Product create karo
+    // Product create karo, Mongoose schema will handle validation
     const product = await Product.create({
       name: body.name.trim(),
       category: body.category.trim(),
@@ -55,6 +51,13 @@ export async function POST(req: Request) {
     );
   } catch (err: any) {
     console.error("Error adding product:", err.message);
+    if (err instanceof mongoose.Error.ValidationError) {
+      const errors = Object.values(err.errors).map((error: any) => error.message);
+      return NextResponse.json(
+        { message: "Validation Error", errors },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { message: "Something went wrong while adding product" },
       { status: 500 }
@@ -62,31 +65,3 @@ export async function POST(req: Request) {
   }
 }
 
-/* -------------------------
-   DELETE: Remove Product
-------------------------- */
-export async function DELETE(req: Request) {
-  try {
-    await connectDB(); // Database se connect karo
-    const { searchParams } = new URL(req.url);
-    const productId = searchParams.get("id");
-
-    if (!productId) {
-      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
-    }
-
-    const deletedProduct = await Product.findByIdAndDelete(productId);
-
-    if (!deletedProduct) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
-  } catch (err: any) {
-    console.error("Error deleting product:", err.message);
-    return NextResponse.json(
-      { message: "Failed to delete product" },
-      { status: 500 }
-    );
-  }
-}

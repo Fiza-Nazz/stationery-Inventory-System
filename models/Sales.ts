@@ -1,6 +1,23 @@
 import mongoose from "mongoose";
 
-const SalesSchema = new mongoose.Schema({
+interface ISaleItem {
+  productId: mongoose.Schema.Types.ObjectId;
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+export interface ISales extends mongoose.Document {
+  items: ISaleItem[];
+  subtotal: number;
+  discount: number;
+  tax: number;
+  totalAmount: number;
+  totalProfit: number;
+  paymentMethod: "Cash" | "Card";
+}
+
+const SalesSchema = new mongoose.Schema<ISales>({
   items: [
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -17,4 +34,4 @@ const SalesSchema = new mongoose.Schema({
   paymentMethod: { type: String, enum: ["Cash", "Card"], default: "Cash" }
 }, { timestamps: true });
 
-export default mongoose.models.Sales || mongoose.model("Sales", SalesSchema);
+export default mongoose.models.Sales as mongoose.Model<ISales> || mongoose.model<ISales>("Sales", SalesSchema);

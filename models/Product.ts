@@ -1,6 +1,16 @@
 import mongoose from "mongoose";
 
-const ProductSchema = new mongoose.Schema({
+export interface IProduct extends mongoose.Document {
+  name: string;
+  category: string;
+  costPrice: number;
+  retailPrice: number;
+  wholesalePrice: number;
+  stock: number;
+  unit: string;
+}
+
+const ProductSchema = new mongoose.Schema<IProduct>({
   name: { type: String, required: true },
   category: { type: String, required: true },
   costPrice: { type: Number, required: true },
@@ -10,4 +20,4 @@ const ProductSchema = new mongoose.Schema({
   unit: { type: String, required: true },
 }, { timestamps: true });
 
-export default mongoose.models.Product || mongoose.model("Product", ProductSchema);
+export default mongoose.models.Product as mongoose.Model<IProduct> || mongoose.model<IProduct>("Product", ProductSchema);
