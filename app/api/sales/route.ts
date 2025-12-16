@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 
 export async function POST(req: Request) {
   try {
-    await connectDB(); // Moved inside the function
+    await connectDB();
     const data = await req.json();
     const { items, paymentMethod } = data;
 
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       paymentMethod,
     });
 
-    return NextResponse.json({ message: "Sale created successfully", sale: newSale });
+    return NextResponse.json({ message: "Sale created successfully", sale: newSale, calculatedProfit: newSale.totalProfit });
   } catch (err: any) {
     console.error(err);
     if (err instanceof mongoose.Error.ValidationError) {

@@ -26,23 +26,34 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     await connectDB(); // Database se connect karo
-    const body = await req.json();
+    const { name, category, costPrice, retailPrice, stock, wholesalePrice, unit } = body;
+
+    if (
+      typeof name !== "string" || name.trim() === "" ||
+      typeof category !== "string" || category.trim() === "" ||
+      typeof costPrice !== "number" || costPrice < 0 ||
+      typeof retailPrice !== "number" || retailPrice < 0 ||
+      typeof stock !== "number" || stock < 0 ||
+      (wholesalePrice !== undefined && (typeof wholesalePrice !== "number" || wholesalePrice < 0))
+    ) {
+      return NextResponse.json({ message: "Invalid product data provided. Ensure all required fields are correct numbers and not negative." }, { status: 400 });
+    }
 
     // Optional: check for duplicate product
-    const existing = await Product.findOne({ name: body.name.trim() });
+    const existing = await Product.findOne({ name: name.trim() });
     if (existing) {
       return NextResponse.json({ message: "Product already exists" }, { status: 400 });
     }
 
     // Product create karo, Mongoose schema will handle validation
     const product = await Product.create({
-      name: body.name.trim(),
-      category: body.category.trim(),
-      costPrice: Number(body.costPrice),
-      retailPrice: Number(body.retailPrice),
-      stock: Number(body.stock),
-      wholesalePrice: body.wholesalePrice ? Number(body.wholesalePrice) : 0,
-      unit: body.unit || "pcs"
+      name: name.trim(),
+      category: category.trim(),
+      costPrice: costPrice,
+      retailPrice: retailPrice,
+      stock: stock,
+      wholesalePrice: wholesalePrice || 0,
+      unit: unit || "pcs"
     });
 
     return NextResponse.json(

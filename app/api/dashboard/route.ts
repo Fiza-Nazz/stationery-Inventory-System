@@ -34,14 +34,15 @@ export async function GET() {
 
     // 5️⃣ Today's date range (explicitly UTC)
     const now = new Date();
-    const startOfDay = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0));
-    const endOfDay = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
+    const startOf30DaysAgo = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() - 30, 0, 0, 0));
+    // endOfDay should be the start of the *next* UTC day for a full inclusive range
+    const endOfToday = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0));
 
-    // 6️⃣ Aggregate today's sales
+    // 6️⃣ Aggregate today's sales (temporarily changed to last 30 days for debugging)
     const salesAggregation = await Sale.aggregate([
       {
         $match: {
-          createdAt: { $gte: startOfDay, $lte: endOfDay },
+          createdAt: { $gte: startOf30DaysAgo, $lte: endOfToday }, // Broadened range for debugging
         },
       },
       {

@@ -1,16 +1,110 @@
-Hi Gemini, I need your help as a Next.js full-stack expert. I have a Next.js 14 project and want you to **analyze every file** in the project to detect potential production build errors.
+You are a senior Next.js 14 + MongoDB + TypeScript full-stack engineer.
 
-Specifically, please do the following:
+I have a full-stack Stationery Inventory System.
+There is a CRITICAL BUSINESS LOGIC BUG related to PROFIT calculation.
 
-1. **Check all page.tsx and route.ts files**: Ensure no page.tsx file is being imported directly anywhere. Next.js 14 does not allow importing page.tsx files.
-2. **Check all imports**: Identify any incorrect or invalid imports that might break production build (like importing page.tsx, wrong paths, or missing modules).
-3. **Check environment variables usage**: Ensure all sensitive variables like MONGODB_URI are correctly referenced using `process.env` and are not hardcoded.
-4. **Check MongoDB connection code**: Ensure the connection string format is correct (`mongodb://` or `mongodb+srv://`) and matches the environment variables.
-5. **Check all API routes**: Identify any potential runtime errors, aggregation errors, or schema mismatches.
-6. **Check for TypeScript errors**: Highlight any TS errors that will cause the build to fail in production.
-7. **Check lib/ and models/**: Ensure all utility and model files are properly exported and can be imported safely.
-8. **Provide actionable recommendations**: For every detected issue, suggest how to fix it step by step.
+CURRENT PROBLEMS (VERY IMPORTANT):
+1. When I sell a product from the Sales page, PROFIT is NOT calculated correctly.
+2. Dashboard page shows NO profit or zero profit.
+3. Reports page shows WRONG profit.
+4. Analytics page shows WRONG profit.
+5. Locally UI works, but profit numbers are incorrect everywhere.
 
-After analysis, give a **summary of all issues** that would prevent production deployment and exact fixes for each.
+This means the issue is NOT UI related.
+This is a DATA / LOGIC / BACKEND FLOW issue.
 
-Please analyze the **entire project directory**, including app/, lib/, models/, and any other custom folders.
+YOUR TASK:
+You must analyze the ENTIRE PROJECT and FIX PROFIT LOGIC end-to-end.
+
+Please do ALL of the following STEP BY STEP:
+
+---------------------------------
+1. SALES FLOW ANALYSIS
+---------------------------------
+- Analyze how a product sale is recorded
+- Check:
+  - sale price
+  - cost price
+  - quantity
+  - profit calculation formula
+- Verify:
+  profit = (sellingPrice - costPrice) * quantity
+
+---------------------------------
+2. DATABASE CHECK (MongoDB)
+---------------------------------
+- Check sales schema
+- Check product schema
+- Ensure costPrice and sellingPrice are stored correctly
+- Check data types (number vs string)
+
+---------------------------------
+3. API ROUTES ANALYSIS
+---------------------------------
+Analyze ALL profit-related APIs:
+- /api/sales
+- /api/dashboard
+- /api/reports
+- /api/analytics (if exists)
+
+Check:
+- Aggregation pipelines
+- $sum logic
+- $multiply usage
+- Missing fields
+- Wrong field names
+
+---------------------------------
+4. DASHBOARD ISSUE
+---------------------------------
+- Identify why dashboard profit is ZERO or not updating
+- Check:
+  - API response
+  - totalProfit field existence
+  - state update logic
+  - caching / stale data issues
+
+---------------------------------
+5. REPORTS & ANALYTICS ISSUE
+---------------------------------
+- Identify why profit is WRONG there
+- Compare aggregation logic with dashboard
+- Find inconsistency
+
+---------------------------------
+6. ROOT CAUSE
+---------------------------------
+- Identify EXACT root cause
+- Do NOT guess
+- Clearly explain:
+  - What is broken
+  - Why it broke
+  - Where it broke
+
+---------------------------------
+7. FIXES (MANDATORY)
+---------------------------------
+For EVERY issue:
+- Mention exact file name
+- Provide corrected code
+- Explain what changed and why
+
+---------------------------------
+8. FINAL SUMMARY
+---------------------------------
+Provide:
+- List of broken files
+- Correct profit calculation logic
+- Confirmation that:
+  - Sales page saves correct profit
+  - Dashboard shows correct profit
+  - Reports show correct profit
+  - Analytics show correct profit
+
+IMPORTANT RULES:
+- Do NOT change UI or styling
+- Do NOT refactor unnecessary code
+- ONLY fix profit calculation & data flow
+- Treat this as a PRODUCTION BUG
+
+Be precise, professional, and production-safe.

@@ -21,6 +21,29 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     await connectDB();
     const data = await req.json();
 
+    // Validate incoming data for updates
+    if (data.costPrice !== undefined && (typeof data.costPrice !== "number" || data.costPrice < 0)) {
+      return NextResponse.json({ message: "Invalid costPrice provided. Must be a non-negative number." }, { status: 400 });
+    }
+    if (data.retailPrice !== undefined && (typeof data.retailPrice !== "number" || data.retailPrice < 0)) {
+      return NextResponse.json({ message: "Invalid retailPrice provided. Must be a non-negative number." }, { status: 400 });
+    }
+    if (data.stock !== undefined && (typeof data.stock !== "number" || data.stock < 0)) {
+      return NextResponse.json({ message: "Invalid stock provided. Must be a non-negative number." }, { status: 400 });
+    }
+    if (data.wholesalePrice !== undefined && (typeof data.wholesalePrice !== "number" || data.wholesalePrice < 0)) {
+      return NextResponse.json({ message: "Invalid wholesalePrice provided. Must be a non-negative number." }, { status: 400 });
+    }
+    if (data.name !== undefined && (typeof data.name !== "string" || data.name.trim() === "")) {
+      return NextResponse.json({ message: "Invalid product name provided." }, { status: 400 });
+    }
+    if (data.category !== undefined && (typeof data.category !== "string" || data.category.trim() === "")) {
+      return NextResponse.json({ message: "Invalid category provided." }, { status: 400 });
+    }
+    if (data.unit !== undefined && (typeof data.unit !== "string" || data.unit.trim() === "")) {
+      return NextResponse.json({ message: "Invalid unit provided." }, { status: 400 });
+    }
+
     if (Object.keys(data).length === 0) {
       return NextResponse.json({ message: "Request body cannot be empty" }, { status: 400 });
     }

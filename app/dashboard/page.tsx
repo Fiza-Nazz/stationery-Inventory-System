@@ -243,6 +243,7 @@ export default function DashboardPage() {
       }
 
       const data = await response.json();
+      console.log("Dashboard API Response Data:", data); // New log: Check your browser's console for this output
       const safeData: DashboardStats = {
         totalProducts: Number(data.totalProducts) || 0,
         totalStock: Number(data.totalStock) || 0,
