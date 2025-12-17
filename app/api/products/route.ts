@@ -10,7 +10,17 @@ export async function GET() {
   try {
     await connectDB();
     const products = await Product.find();
-    return NextResponse.json(products, { status: 200 });
+
+    // 🔹 SANITIZE NUMERIC FIELDS FOR PRODUCTION
+    const sanitizedProducts = products.map(p => ({
+      ...p.toObject(),
+      costPrice: Number(p.costPrice),
+      retailPrice: Number(p.retailPrice),
+      stock: Number(p.stock),
+      wholesalePrice: Number(p.wholesalePrice),
+    }));
+
+    return NextResponse.json(sanitizedProducts, { status: 200 });
   } catch (err: any) {
     console.error("Error fetching products:", err.message);
     return NextResponse.json(
@@ -29,7 +39,7 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    // 🔥 FORCE CONVERSION (MOST IMPORTANT FIX)
+    // 🔹 FORCE CONVERSION (MOST IMPORTANT FIX)
     const name = String(body.name || "").trim();
     const category = String(body.category || "").trim();
 
